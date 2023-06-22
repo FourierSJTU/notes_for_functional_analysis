@@ -1,0 +1,235 @@
+% !TeX program = xelatex
+
+\documentclass[
+	border={25mm 20mm 25mm 30mm},  % 左下右上的页边距
+%	preview, 
+	varwidth,  % 页面最大宽度
+	utf8,
+]{standalone}
+%\documentclass[utf8,a4paper,12pt] {ctexart}
+
+\PassOptionsToPackage{no-math}{fontspec} % 使用中文不改变英文字体
+\usepackage[nocap,scheme=plain]{ctex}  % 使用中文
+
+\usepackage[
+	colorlinks,  % 有色链接
+	linkcolor=blue,  % 蓝色的目录链接
+]{hyperref}  % 支持目录跳转
+% 清除目录项的页号和分隔点
+\usepackage[titles]{tocloft}
+\usepackage{enumerate}
+\usepackage{amsmath} % 数学库
+%%%数学用的宏包
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{bm}
+%%%%%%%%%%%%%%
+\cftpagenumbersoff{section}
+\cftpagenumbersoff{subsection}
+\cftpagenumbersoff{subsubsection}
+\renewcommand{\cftdot}{}
+
+\newenvironment{myindentpar}[1]%定义缩进
+	{\begin{list}{}%
+			{\setlength{\leftmargin}{#1}}%
+			\item[]%
+	}
+ {\end{list}}
+
+\newcommand\dd{\mathop{}\!\mathrm{d}}%微分自动空格正体
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% begin
+
+\title{Notes for Functional Anaysis}
+\author{Fourier}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\setlength{\parindent}{1em}  % 设置缩进2字符
+
+\section{Normed and Banach spaces}
+
+\subsection{Vector spaces}
+
+\subsubsection{Definition for vector spaces}
+
+\begin{myindentpar}{1em}
+	\begin{enumerate}[(1)]
+		\item For all \( x_1, x_2, x_3 \in X \), \( x_1 + \left( x_2 + x_3 \right) = \left( x_1 + x_2 \right) + x_3 \).
+		\item There exists an element, denoted by \( \bm{0} \) (called the \textit{zero vector}) such that for all \( x \in X \), \( x + \bm{0} = x = \bm{0} + x \).
+		\item For every \( x \in X \), there exists an element, denoted by \( -x \), such that \( x + \left( -x \right) = \left(-x\right) + x = \bm{0} \).
+		\item For all \( x_1, x_2 \) in \( X \), \( x_1 + x_2 = x_2 + x_1 \).
+		\item For all \( x \in X \), \( 1 \cdot x = x \).
+		\item For all \( x \in X \) and all \( \alpha, \beta \in \mathbb{K} \), \( \alpha \cdot \left(\beta \cdot x\right) = \left(\alpha \beta\right)\cdot x \).
+		\item For all \( x \in X \) and all \( \alpha, \beta \in \mathbb{K} \), \( \left(\alpha + \beta\right) \cdot x = \alpha \cdot x + \beta \cdot x \).
+		\item For all \( x_1, x_2 \in X \) and all \( \alpha \in \mathbb{K} \), \( \alpha \cdot \left(x_1 + x_2\right) = \alpha \cdot x_1 + \alpha \cdot x_2 \).
+	\end{enumerate}
+\end{myindentpar}
+
+\subsubsection{Some examples}
+
+\begin{itemize}
+	\item \( \mathbb{R}^{d} = \mathbb{R} \times \ldots \times \mathbb{R} \) (\(d\) times):常见的矢量，有限维.
+	\item \(C[a,b]\): all continuous functions \(\mathbf{x} : [a,b] \to \mathbb{K}\)
+	      \\连续函数集，可看成一个无限维向量，每一个\(\dd x\)分别对应一个维度.
+	\item \(C^1 [a,b]=\left\{\left.\mathbf{x}:[a,b]\to\mathbb{R}\right|\mathbf{x}\text{ is continuously differentiable on }[a,b]\right\}\)
+	      \[C^1 [a,b] \subset C[a,b].\]
+	\item \(\ell^p:=\Big\{\left(a_n\right)_{n\in\mathbb{N}}:\displaystyle\sum_{n=1}^{\infty}{\left|a_n\right|^p<\infty}\Big\}\), \(p\in\left[1,\infty\right)\)收敛的数列，无限维.
+	\item \(\ell^\infty\): \(\ell^p\) for any \(p\in\left[1,\infty\right)\), \(\ell^p\subset\ell^\infty\).
+	\\\(c_{00}\): all sequences that are eventually 0
+	\\\(c_0\): all sequences that converge to 0
+	\\\(c\): all suquences that are convergent
+	\\\(c_{00}\subset c_0\subset c\subset\ell^\infty\).
+	\item \(L^p[a,b]:``="\Bigl\{\mathbf{x}:[a,b]\to\mathbb{R}\;\Bigm|\;\displaystyle\underset{\text{Lebesgue}}{\int_a^b}{\left|\mathbf{x}(t)\right|^p\dd t}<\infty\Bigr\}\), \(p\in\left[1,\infty\right)\)\\积分收敛的函数，但不一定连续.
+	      \\Each element in \(L^p[a,b]\) is not a functions \(\mathbf{x}\), but rather an equivalence class \([\mathbf{x}]\) of functions, where
+	      \[[\mathbf{x}]=\Bigl\{\mathbf{y}:[a,b]\to\mathbb{R}\;\Bigm|\;\underset{\text{Lebesgue}}{\int_a^b}{\left|\mathbf{x}(t)-\mathbf{y}(t)\right|^p\dd t}=0\Bigr\}\text{(不等的部分零测)}.\]
+	      If \(\mathbf{x},\mathbf{y}\in C[a,b]\), then \(\mathbf{x}=\mathbf{y}\).
+\end{itemize}
+
+\subsubsection{Convex sets}
+
+\(X\) is a vector space, \(C\subset X\), for all \(x,y\in C\), and all \(\alpha\in[0,1]\), \((1-\alpha)x+\alpha y\in C\)
+
+\subsection{Normed spaces}
+
+\subsubsection{Definition for normed spaces}
+
+A \textit{norm} on \(X\) is a function \(\Vert\cdot\Vert:X\to\left[0,+\infty\right)\) such that:
+\begin{myindentpar}{1em}
+	\begin{enumerate}[(1)]
+		\item (Positive definiteness)
+		      \\For all \(x\in X\), \(\Vert x\Vert\geqslant 0\). If \(x\in X\) and \(\Vert x\Vert=0\), then \(x=\mathbf{0}\).
+		\item For all \(\alpha\in\mathbb{K}\)(\(\mathbb{R}\) or \(\mathbb{C}\)) and for all \(x\in X\), \(\Vert \alpha x\Vert=\alpha\Vert x\Vert\).
+		\item (Triangle inequity) For all \(x,y\in X\), \(\Vert x+y\Vert\leqslant \Vert x\Vert +\Vert y\Vert\).
+	\end{enumerate}
+\end{myindentpar}
+A \textit{normed space} is a vector space \(X\) equipped with a norm.
+
+\subsubsection{Some examples}
+
+\begin{itemize}
+	\item \(\mathbb{R}^d, \Vert\cdot\Vert_p\):
+	      \[\Vert\mathbf{x}\Vert_p:=\left(\left|x_1\right|^p+\ldots+\left|x_d\right|^p\right)^\frac{1}{p},\mathbf{x}\in\mathbb{R}^d\]
+	      \textit{texicab norm}: \(\Vert\cdot\Vert_1\)-norm
+	      \\\textit{Euclidean norm}: \(\Vert\cdot\Vert_2\)-norm
+	      \\\(\max\left\{\left|x_1\right|,\ldots,\left|x_d\right|\right\}\): \(\Vert\cdot\Vert_\infty\)-norm
+	\item \(C[a,b],\Vert\cdot\Vert_p\):
+	      \begin{align*}
+		       & \Vert\mathbf{x}\Vert_1:=\int_a^b{\left|\mathbf{x}(t)\right|\dd t},
+		      \\&\Vert\mathbf{x}\Vert_2:=\sqrt{\int_a^b{\left|\mathbf{x}(t)\right|^2\dd t}},
+		      \\&\Vert\mathbf{x}\Vert_\infty=\underset{t\in[a,b]}{\sup}\left|\mathbf{x}(t)\right|=\underset{t\in[a,b]}{\max}\left|\mathbf{x}(t)\right|,
+	      \end{align*}
+	      \[\left<\mathbf{x},\mathbf{y}\right>:=\sqrt{\int_a^b{\mathbf{x}(t)\big(\mathbf{y}(t)^*\big)\dd t}}\,\Longrightarrow\,\Vert\mathbf{x}\Vert_2=\sqrt{\left<\mathbf{x},\mathbf{x}\right>}\]
+	\item \(C^1[a,b],\Vert\mathbf{x}\Vert_{1,\infty}\)
+	      \[\Vert\mathbf{x}\Vert_{1,\infty}:=\Vert\mathbf{x}\Vert_\infty+\Vert{\mathbf{x}'}\Vert_\infty\]
+	\item \(\ell^p,\Vert\cdot\Vert_p\)
+	      \[\left\Vert\left(a_n\right)_{n\in\mathbb{N}}\right\Vert_p:=\Bigl(\sum_{n=1}^{\infty}{\left(a_n\right)_{n\in\mathbb{N}}}\Bigr)^\frac{1}{p},\,\left(a_n\right)_{n\in\mathbb{N}}\in\ell^p.\]
+	      When \(p=\infty\), \(\left\Vert\left(a_n\right)_{n\in\mathbb{N}}\right\Vert_\infty=\underset{n\in\mathbb{N}}{\sup}\left|a_n\right|,\,\left(a_n\right)_{n\in\mathbb{N}}\in\ell^\infty\)
+	\item \(L^p,\Vert\cdot\Vert_p\)
+	      \[\left\Vert\mathbf{x}\right\Vert_p:=\Bigl(\int_a^b{\left|\mathbf{x}(t)\right|\dd t}\Bigr)^{\frac{1}{p}}\]
+	      \begin{align*}
+		      \left\Vert\mathbf{x}\right\Vert_\infty & :=\operatorname{essup}\left|\mathbf{x}(t)\right|\text{(essential supremum, 本质上确界)}
+		      \\&:=\inf\bigl\{M:\left|\mathbf{x}(t)\right|\leqslant M\text{ for almost all }t\in[a,b]\bigr\}
+	      \end{align*}
+\end{itemize}
+
+\subsection{Topology of normed spaces}
+
+\subsubsection{Open ball}
+
+Let \((X,\Vert\cdot\Vert)\) be a normed space, \(x\in X\), and \(r>0\).
+\\The \textit{open ball} \(B(x,r)\) with \textit{center} \(x\) and \textit{radius} \(r\) is difined by
+\[B(x,r)=\left\{y\in X:\Vert x-y\Vert<r\right\}.\]
+
+\subsubsection{Open set}
+
+Let \((X,\Vert\cdot\Vert)\) be a normed space. A set \(U\subset X\) is said to be \textit{open} if for every \(x\in U\), there exists an \(r>0\) such that \(B(x,r)\subset U\).
+\begin{itemize}
+	\item \(X\) and \(\varnothing\) are also open.
+	\item Any union or finite intersection of open sets is open.
+\end{itemize}
+
+\subsubsection{Closed set}
+
+Let \((X,\Vert\cdot\Vert)\) be a normed space. A set \(F\) is \textit{closed} if its complement \(X\backslash F\) is open.
+\begin{itemize}
+	\item \(X\) and \(\varnothing\) are also closed.
+\end{itemize}
+
+\subsubsection{Dense set}
+
+A subset \(D\) of a normed space \((X,\Vert\cdot\Vert)\) is said to be \textit{dense} in \(X\) if for all \(x\in X\) and all \(\epsilon>0\), there exists a \(y\in D\) such that \(\Vert x-y\Vert<\epsilon\).
+\\That is, if we take any \(x\in X\) and consider any ball \(B(x,\epsilon)\) centered at \(X\), it contains a point from \(D\).
+\begin{itemize}
+	\item \(\mathbb{Q}\) and \(\mathbb{R}\backslash\mathbb{Q}\) are dense in \(\mathbb{R}\).
+	\item \(c_{00}\) is dense in \(\ell^2\).
+\end{itemize}
+
+\subsubsection{Separable spaces}
+
+A normed space \(X\) is called separable if it has a countable dense set, that is, there exists a set \(D:=\left\{x_1,x_2,x_3,\ldots\right\}\) in \(X\) such that for every \(r>0\) and every \(x\in X\), there exists an \(x_n\in D\) such that \(\left\Vert x_n-x\right\Vert<r\).
+\begin{itemize}
+	\item \(\mathbb{R}\) is separable, since we can simply take \(D=\mathbb{Q}\).
+	\item \(\ell^p\) is separable for all \(1\leqslant p<\infty\).
+	\item \(\ell^\infty\) is not separable.
+\end{itemize}
+
+\subsubsection{Topology}
+
+If we consider the collection \(\mathcal{O}\) of all open sets in a normed space \(\left(X,\Vert\cdot\Vert\right)\), we notice that it has the three properties:
+\begin{myindentpar}{1em}
+	\begin{enumerate}[(1)]
+		\item \(\varnothing,X\in\mathcal{O}\)
+		\item If \(U_i\in\mathcal{O}\) for all \(i\in I\), then \(\displaystyle\bigcup_{i\in I}{U_i}\in\mathcal{O}\)
+		\item If \(U_1,\ldots,U_n\) is a finite collection of sets from \(\mathcal{O}\), then \(\displaystyle\bigcap_{i=1}^n{U_i}\in\mathcal{O}\).
+	\end{enumerate}
+\end{myindentpar}
+Any collection \(\mathcal{O}\) of subsets of \(X\) that satisfy properties above is called a \textit{topology} on \(X\) and \(X,\mathcal{O}\) is called a \textit{topology space}.
+
+\subsection{Sequences in a normed space; Banach spaces}
+
+\subsubsection{Convergent sequence}
+
+Let \(\left(x_n\right)_{n\in\mathbb{N}}\) be a sequence in \(X\) and let \(L\in X\). The sequence \(\left(x_n\right)_{n\in\mathbb{N}}\) is said to be \textit{convergent} (in \(X\)) with \textit{limit} \(L\) if
+\[\forall\epsilon>0,\exists N\in\mathbb{N}, \text{such that }\forall n>N, \left\Vert x_n-L\right\Vert<\epsilon\]
+\[\lim_{n\to\infty}{\left\Vert x_n-L\right\Vert}=0.\]
+
+\begin{itemize}
+	\item A convergent sequence has a unique limit.
+	\item Consider the sequence \(\left(\mathbf{x}_n\right)_{n\in\mathbb{N}}\) converging to {\bf{0}} in the normed space \(\left(C[0,1],\Vert\cdot\Vert_\infty\right)\), where \(\displaystyle\mathbf{x}_n=\frac{\sin(2\pi nt)}{n}\).
+\end{itemize}
+
+\subsubsection{Cauchy sequence}
+
+A sequence \(\left(\mathbf{x}_n\right)_{n\in\mathbb{N}}\) in a normed space \(\left(X,\left\Vert\cdot\right\Vert\right)\) is called a \textit{Cauchy sequence} if for every \(\epsilon>0\), there exists an \(N\in\mathbb{N}\), such that for all \(m,n\in\mathbb{N}\) satisfying \(m,n>\mathbb{N}\), \(\left\Vert x_m-x_n\right\Vert<\epsilon\).
+
+\begin{itemize}
+	\item Every convergent sequence is \textit{Cauchy}.
+\end{itemize}
+
+\subsubsection{Banach space}
+
+\textit{Banach space} or \textit{complete normed space}: a normed space with which the set Cauchy sequence = convergent sequence.
+
+\begin{itemize}
+	\item {\bf{Banach space}}: \(\left(\mathbb{R},\left|\cdot\right|\right)\)\(\left(\mathbb{C},\left|\cdot\right|\right)\)\(\left(\ell^p,\Vert\cdot\Vert_p\right)\)\(\left(C[a,b],\Vert\cdot\Vert_\infty\right)\)\(\left(L^2[a,b],\Vert\cdot\Vert_2\right)\)\ldots
+	\item \textit{none}-{\bf{Banach space}}: \(\left(\mathbb{Q},\left|\cdot\right|\right)\)\(\left(C[a,b],\Vert\cdot\Vert_2\right)\)\ldots
+\end{itemize}
+
+\subsubsection{Corollaries}
+
+\begin{itemize}
+	\item Every Cauchy sequence in a normed space is bounded.
+	\item Every real sequence has a \textit{momotone} subsequence.
+	\item momotone + bounded \(\Longrightarrow\) convergent(单调有界必收敛).
+	\item (Bolzano-Weierstrass Theorem) Every bounded real sequence has a convergent subsequence.
+	\item Every real Cauchy sequence in \(\mathbb{R}\) is convergent. 
+	\item Finite-dimensional normed spaces are Banach.
+\end{itemize}
+
+\end{document}
